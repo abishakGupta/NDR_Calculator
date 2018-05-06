@@ -1,10 +1,11 @@
-library(tidyr)
 library(shiny)
-require(openxlsx)
-library(DT)
-library(reshape2)
-library(tidyverse)
-library(d3heatmap)
+library(readxl)
+# library(DT)
+# library(reshape2)
+#library(tidyverse)
+#library(d3heatmap)
+
+
 ## app.R ##
 server <- function(input, output,session) {
 
@@ -12,16 +13,18 @@ server <- function(input, output,session) {
     
     #check the validity of processed file
     if (grepl("\\.xlsx$", basename(input$dataProcessed$datapath)))
-      dataframeProcessed <- read.xlsx(input$dataProcessed$datapath, colNames = TRUE)
+      dataframeProcessed <- read_excel(input$dataProcessed$datapath)
     else if (grepl("\\.csv$", basename(input$dataProcessed$datapath)))
       dataframeProcessed <- read.table(input$dataProcessed$datapath, sep=",",stringsAsFactors = F)
     else
       return ()
     
     resTask <- dataframeProcessed
+   
     resTask[resTask$DRUG_NAME=="dmso",2] <- "DMSO"
-    GR_DMSO= median(resTask[resTask$DRUG_NAME=="DMSO",c("finalCells")]/resTask[resTask$DRUG_NAME=="DMSO",c("initCells")])
-    GR_BzCl= median(resTask[resTask$DRUG_NAME=="BzCl",c("finalCells")]/resTask[resTask$DRUG_NAME=="BzCl",c("initCells")])
+    
+    GR_DMSO= median(unlist(resTask[resTask$DRUG_NAME=="DMSO",c("finalCells")]/resTask[resTask$DRUG_NAME=="DMSO",c("initCells")]))
+    GR_BzCl= median(unlist(resTask[resTask$DRUG_NAME=="BzCl",c("finalCells")]/resTask[resTask$DRUG_NAME=="BzCl",c("initCells")]))
     resTask= resTask[!(resTask$DRUG_NAME %in% c("BzCl","DMSO","xBzCl","empty","Cytarabine/Idarubicin")),]
     
     NDR= pmax(-1,(1 - 2 ^ (log2(resTask[,c("finalCells")]/resTask[,c("initCells")])/log2(GR_BzCl))) / (1 - 2 ^ (log2(GR_DMSO)/log2(GR_BzCl))))
@@ -35,7 +38,7 @@ server <- function(input, output,session) {
     
     #check the validity of annotation file
     if (grepl("\\.xlsx$", basename(input$dataAnnot$datapath)))
-      dataframeAnnot <- read.xlsx(input$dataAnnot$datapath, colNames = TRUE)
+      dataframeAnnot <- read_excel(input$dataAnnot$datapath)
     else if (grepl("\\.csv$", basename(input$dataAnnot$datapath)))
       dataframeAnnot <- read.table(input$dataAnnot$datapath, sep=",",stringsAsFactors = F)
     else
@@ -43,7 +46,7 @@ server <- function(input, output,session) {
     
     #check the validity of final data file
     if (grepl("\\.xlsx$", basename(input$dataFinal$datapath)))
-      dataframeFinal <- read.xlsx(input$dataFinal$datapath, colNames = TRUE, startRow=input$inputRfinal)
+      dataframeFinal <- read_excel(input$dataFinal$datapath, skip=input$inputRfinal)
     else if (grepl("\\.csv$", basename(input$dataFinal$datapath)))
       dataframeFinal <- read.table(input$dataFinal$datapath, sep=",",stringsAsFactors = F,skip=input$inputRfinal)
     else
@@ -63,7 +66,7 @@ server <- function(input, output,session) {
     #check the validity of initial data file or rate
     if (input$inputSelection == 1){
       if (grepl("\\.xlsx$", basename(input$dataInitial$datapath)) )
-        dataframeInitial <- read.xlsx(input$dataInitial$datapath, colNames = TRUE, startRow=input$inputRinit)
+        dataframeInitial <- read_excel(input$dataInitial$datapath, skip=input$inputRinit)
       else if (grepl("\\.csv$", basename(input$dataInitial$datapath)))
         dataframeInitial <- read.table(input$dataInitial$datapath, sep=",",stringsAsFactors = F,skip=input$inputRinit)
       else
@@ -90,8 +93,8 @@ server <- function(input, output,session) {
 
     
     resTask[resTask$DRUG_NAME=="dmso",2] <- "DMSO"
-    GR_DMSO= median(resTask[resTask$DRUG_NAME=="DMSO",c("finalCells")]/resTask[resTask$DRUG_NAME=="DMSO",c("initCells")])
-    GR_BzCl= median(resTask[resTask$DRUG_NAME=="BzCl",c("finalCells")]/resTask[resTask$DRUG_NAME=="BzCl",c("initCells")])
+    GR_DMSO= median(unlist(resTask[resTask$DRUG_NAME=="DMSO",c("finalCells")]/resTask[resTask$DRUG_NAME=="DMSO",c("initCells")]))
+    GR_BzCl= median(unlist(resTask[resTask$DRUG_NAME=="BzCl",c("finalCells")]/resTask[resTask$DRUG_NAME=="BzCl",c("initCells")]))
     resTask= resTask[!(resTask$DRUG_NAME %in% c("BzCl","DMSO","xBzCl","empty","Cytarabine/Idarubicin")),]
     
     NDR= pmax(-1,(1 - 2 ^ (log2(resTask[,c("finalCells")]/resTask[,c("initCells")])/log2(GR_BzCl))) / (1 - 2 ^ (log2(GR_DMSO)/log2(GR_BzCl))))
@@ -128,7 +131,7 @@ server <- function(input, output,session) {
       return ()
     
     if (grepl("\\.xlsx$", basename(input$dataAnnot$datapath)))
-      dataframeFinal = read.xlsx(input$dataAnnot$datapath, colNames = TRUE)
+      dataframeFinal = read_excel(input$dataAnnot$datapath)
     else if (grepl("\\.csv$", basename(input$dataAnnot$datapath)))
       dataframeFinal <- read.table(input$dataAnnot$datapath, sep=",",stringsAsFactors = F)
     else
@@ -141,7 +144,7 @@ server <- function(input, output,session) {
       return ()
     
     if (grepl("\\.xlsx$", basename(input$dataInitial$datapath)))
-      dataframeFinal <- read.xlsx(input$dataInitial$datapath, colNames = TRUE, startRow=input$inputRinit)
+      dataframeFinal <- read_excel(input$dataInitial$datapath, skip=input$inputRinit)
     else if (grepl("\\.csv$", basename(input$dataInitial$datapath)))
       dataframeFinal <- read.table(input$dataInitial$datapath, sep=",",stringsAsFactors = F,skip=input$inputRinit)
     else
@@ -153,7 +156,7 @@ server <- function(input, output,session) {
     if(is.null(input$dataFinal))
       return ()
     if (grepl("\\.xlsx$", basename(input$dataFinal$datapath)))
-      dataframeFinal <- read.xlsx(input$dataFinal$datapath, colNames = TRUE, startRow=input$inputRfinal)
+      dataframeFinal <- read_excel(input$dataFinal$datapath, skip=input$inputRfinal)
     else if (grepl("\\.csv$", basename(input$dataFinal$datapath)))
       dataframeFinal <- read.table(input$dataFinal$datapath, sep=",",stringsAsFactors = F,skip=input$inputRfinal)
     else
@@ -165,7 +168,7 @@ server <- function(input, output,session) {
     if(is.null(input$dataProcessed))
       return ()
     if (grepl("\\.xlsx$", basename(input$dataProcessed$datapath)))
-      dataframeFinal <- read.xlsx(input$dataProcessed$datapath, colNames = TRUE)
+      dataframeFinal <- read_excel(input$dataProcessed$datapath)
     else if (grepl("\\.csv$", basename(input$dataProcessed$datapath)))
       dataframeFinal <- read.table(input$dataProcessed$datapath, sep=",",stringsAsFactors = F)
     else
@@ -183,7 +186,7 @@ server <- function(input, output,session) {
     
   })
   
-  output$heatmap <- renderD3heatmap({
+  output$heatmap <- d3heatmap::renderD3heatmap({
     if (is.null(resTaskP()))
       return()
     myData <- resTaskP()[,c("NDR","Dilution","DRUG_NAME")]
@@ -199,11 +202,12 @@ server <- function(input, output,session) {
     if (is.null(input$columns))
       return()
     drugsData <- resTaskP()
-    drugsData <- drugsData[drugsData$DRUG_NAME == input$columns,]
+    drugsData <- drugsData[drugsData$DRUG_NAME %in% input$columns,]
     drugsData$NDR <- as.numeric(drugsData$NDR)
     drugsData$Dilution <- as.numeric(drugsData$Dilution)
-    output <- plot(drm(NDR~Dilution, data = drugsData,  fct = LL.5()),ylim=c(-1,1.5),xlab="Concentration",ylab="NDR")
-      #ggplot(drugsData,aes(x=Conc, y=NDR,group= DRUG_NAME)) + xlab("Concentration levels")+ geom_line(size = 1)  + theme_classic(base_size = 18)
+    output <- ggplot(drugsData,aes(x=Dilution, y=NDR,group= DRUG_NAME,color=DRUG_NAME)) + xlab("Concentration levels")+ geom_line(size = 1)  + theme_classic(base_size = 18)
+      #plot(drm(NDR~Dilution, data = drugsData,  fct = LL.5()),ylim=c(-1,1.5),xlab="Concentration",ylab="NDR")
+      #
     
     print(output)
     
@@ -240,7 +244,7 @@ server <- function(input, output,session) {
     colnames <- unique(data$DRUG_NAME[data$NDR < 0])
     
     # Create the checkboxes and select them all by default
-    radioButtons("columns", "Drugs with NDR < 0", 
+    checkboxGroupInput("columns", "Drugs with NDR < 0", 
                        choices  = colnames,
                        selected = "",
                        inline = T)
@@ -268,7 +272,7 @@ ui <- fluidPage(
                           tabsetPanel(
                             tabPanel("Raw Data Table",DT::dataTableOutput("processedTable")),
                             tabPanel("NDR Table",DT::dataTableOutput("tableNDR")),
-                            tabPanel("Heatmap Plot", d3heatmapOutput("heatmap")),
+                            tabPanel("Heatmap Plot", d3heatmap::d3heatmapOutput("heatmap")),
                             tabPanel("Individual Plot", uiOutput("choose_columns"),plotOutput("drugResponses"))
                             )
                         )

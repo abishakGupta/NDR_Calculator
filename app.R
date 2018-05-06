@@ -27,7 +27,7 @@ server <- function(input, output,session) {
     GR_BzCl= median(unlist(resTask[resTask$DRUG_NAME=="BzCl",c("finalCells")]/resTask[resTask$DRUG_NAME=="BzCl",c("initCells")]))
     resTask= resTask[!(resTask$DRUG_NAME %in% c("BzCl","DMSO","xBzCl","empty","Cytarabine/Idarubicin")),]
     
-    NDR= pmax(-1,(1 - 2 ^ (log2(resTask[,c("finalCells")]/resTask[,c("initCells")])/log2(GR_BzCl))) / (1 - 2 ^ (log2(GR_DMSO)/log2(GR_BzCl))))
+    NDR= pmax(-1,unlist(1 - 2 ^ (log2(resTask[,c("finalCells")]/resTask[,c("initCells")])/log2(GR_BzCl))) / (1 - 2 ^ (log2(GR_DMSO)/log2(GR_BzCl))))
     
     resTask <- cbind(resTask,NDR)
     resTask
@@ -97,7 +97,7 @@ server <- function(input, output,session) {
     GR_BzCl= median(unlist(resTask[resTask$DRUG_NAME=="BzCl",c("finalCells")]/resTask[resTask$DRUG_NAME=="BzCl",c("initCells")]))
     resTask= resTask[!(resTask$DRUG_NAME %in% c("BzCl","DMSO","xBzCl","empty","Cytarabine/Idarubicin")),]
     
-    NDR= pmax(-1,(1 - 2 ^ (log2(resTask[,c("finalCells")]/resTask[,c("initCells")])/log2(GR_BzCl))) / (1 - 2 ^ (log2(GR_DMSO)/log2(GR_BzCl))))
+    NDR= pmax(-1,unlist(1 - 2 ^ (log2(resTask[,c("finalCells")]/resTask[,c("initCells")])/log2(GR_BzCl))) / (1 - 2 ^ (log2(GR_DMSO)/log2(GR_BzCl))))
     
     resTask <- cbind(resTask,NDR)
     resTask

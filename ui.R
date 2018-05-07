@@ -1,11 +1,13 @@
 library(shiny)
 library(readxl)
-library(tidyverse)
+library(ggplot2)
 library(d3heatmap)
+library(tidyr)
 
-
-ui <- fluidPage(
-  titlePanel(title=div(img(height=100,width=100,src="iconNDR.png"), "Normalized Drug Response Calculator", windowTitle = "NDR-Calulator")),
+ui <- fluidPage(list(tags$head(HTML('<link rel="icon", href="iconNDR.png", type="image/png" />'))),
+                div(style="padding: 1px 0px; width: '100%'",
+                    titlePanel(title=div(img(height=100,width=100,src="iconNDR.png"), "Normalized Drug Response Calculator"), windowTitle = "NDR-Calulator")
+                ),
   tabsetPanel(
     tabPanel("Use Processed Raw Data",
              sidebarLayout(

@@ -1,9 +1,10 @@
 library(shiny)
 library(readxl)
-library(tidyverse)
+library(ggplot2)
 library(d3heatmap)
+library(tidyr)
 
-## app.R ##
+
 server <- function(input, output) {
   
   resTaskP <- eventReactive(input$runTask1, {

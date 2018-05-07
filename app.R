@@ -1,9 +1,7 @@
 library(shiny)
 library(readxl)
-# library(DT)
-# library(reshape2)
-#library(tidyverse)
-#library(d3heatmap)
+library(tidyverse)
+library(d3heatmap)
 
 
 ## app.R ##
@@ -257,7 +255,7 @@ server <- function(input, output,session) {
 
 
 ui <- fluidPage(
-  titlePanel(title=div(img(height=100,width=100,src="NDR_icon.png"), "Normalized Drug Response Calculator", windowTitle = "NDR-Calulator")),
+  titlePanel(title=div(img(height=100,width=100,src="iconNDR.png"), "Normalized Drug Response Calculator", windowTitle = "NDR-Calulator")),
   tabsetPanel(
              tabPanel("Use Processed Raw Data",
                       sidebarLayout(

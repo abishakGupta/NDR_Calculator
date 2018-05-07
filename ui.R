@@ -8,7 +8,7 @@ ui <- fluidPage(list(tags$head(HTML('<link rel="icon", href="iconNDR.png", type=
                 div(style="padding: 1px 0px; width: '100%'",
                     titlePanel(title=div(img(height=100,width=100,src="iconNDR.png"), "Normalized Drug Response Calculator"), windowTitle = "NDR-Calulator")
                 ),
-  tabsetPanel(
+                navbarPage("",
     tabPanel("Use Processed Raw Data",
              sidebarLayout(
                sidebarPanel(
